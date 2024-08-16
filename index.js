@@ -1,7 +1,13 @@
 const mysql = require("mysql2");
 const express = require("express");
 const cors = require("cors");
+const stripe = require("stripe")("sk_test_4eC39HqLyjWDarjtT1zdp7dc");
 
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true })); // To parse URL-encoded bodies
 // const connection = mysql.createConnection({
 //   host: "localhost",
 //   user: "root",
@@ -38,10 +44,8 @@ connection.connect((err) => {
     });
   }
 });
-const app = express();
-app.use(cors());
-app.use(express.json());
 
+// User Signup Endpoint
 app.post("/signup", (req, res) => {
   const { name, email, password } = req.body;
   if (!email || !password) {
@@ -69,6 +73,38 @@ app.get("/signin", (req, res) => {
     }
     res.status(200).json(results);
   });
+});
+
+// Stripe Checkout Session Endpoint
+const YOUR_DOMAIN = "http://localhost:8000";
+
+app.post("/create-checkout-session", async (req, res) => {
+  const totalAmount = req.body.totalAmount;
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: "Total Purchase",
+            },
+            unit_amount: totalAmount, // Amount in cents
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: `${YOUR_DOMAIN}?success=true`,
+      cancel_url: `${YOUR_DOMAIN}?canceled=true`,
+    });
+
+    res.redirect(303, session.url);
+  } catch (error) {
+    console.error("Error creating checkout session:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 const PORT = 8000;
