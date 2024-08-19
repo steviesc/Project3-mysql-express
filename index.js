@@ -76,7 +76,7 @@ app.get("/signin", (req, res) => {
 });
 
 // Stripe Checkout Session Endpoint
-const YOUR_DOMAIN = "http://localhost:8000";
+const YOUR_DOMAIN = "http://localhost:8090";
 
 app.post("/create-checkout-session", async (req, res) => {
   const totalAmount = req.body.totalAmount;
@@ -107,7 +107,7 @@ app.post("/create-checkout-session", async (req, res) => {
   }
 });
 
-const PORT = 8000;
+const PORT = 8050;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
