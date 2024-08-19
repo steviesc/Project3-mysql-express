@@ -76,7 +76,7 @@ app.get("/signin", (req, res) => {
 });
 
 // Stripe Checkout Session Endpoint
-const YOUR_DOMAIN = "http://localhost:8090";
+const YOUR_DOMAIN = "https://project3-mysql-express.onrender.com";
 
 app.post("/create-checkout-session", async (req, res) => {
   const totalAmount = req.body.totalAmount;
